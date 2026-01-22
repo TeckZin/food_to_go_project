@@ -8,6 +8,8 @@ const count = ref(0)
 <template>
   <main class="min-h-screen grid place-items-center px-8 bg-slate-950 text-white">
     <section class="w-full max-w-2xl text-center">
+     <img src="../assets/foodtogo.png" alt="Logo" />
+
       <!-- Title like HelloWorld -->
       <h1
         class="text-5xl font-semibold tracking-tight bg-gradient-to-r from-violet-400 via-sky-400 to-emerald-300 bg-clip-text text-transparent"

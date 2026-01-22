@@ -6,6 +6,14 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "redirects": [
+      {
+        "source": "**",
+        "has": [{ "type": "protocol", "value": "http" }],
+        "destination": "https://foodtogo.site/:splat",
+        "type": 301
+      }
+    ],
     "rewrites": [
       {
         "source": "**",
@@ -14,3 +22,4 @@
     ]
   }
 }
+
