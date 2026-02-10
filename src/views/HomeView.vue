@@ -1,16 +1,25 @@
 <script setup lang="ts">
 import { ref } from "vue"
 // import { RouterLink } from "vue-router"
+import NavBar from "@/components/NavBar.vue"
 
 const count = ref(0)
 </script>
 
 <template>
-  <main class="min-h-screen grid place-items-center px-8 bg-slate-950 text-white">
-    <section class="w-full max-w-2xl text-center">
-     <img src="../assets/foodlogo-trans.png" alt="Logo" />
+    <body class="flex">
+      <header>
 
-    </section>
-  </main>
+      </header>
+      <main class="flex">
+        <NavBar/>
+        <section class="">
+         <!-- <img src="../assets/foodlogo-trans.png" alt="Logo" /> -->
+
+
+        </section>
+      </main>
+    </body>
+
 </template>
 
