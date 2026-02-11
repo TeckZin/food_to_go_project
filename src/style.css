@@ -1,10 +1,18 @@
+@import "@fontsource/pragati-narrow/400.css";
+@import "@fontsource/pragati-narrow/700.css";
+@import "@fontsource/jacques-francois/400.css";
+
 @import "tailwindcss";
+@config "../tailwind.config.cjs";
+
+
 
 /* Ensure the app uses Tailwind defaults, not Vite starter layout */
 html,
 body,
 #app {
     height: 100%;
+    width: 100%;
 }
 
 body {
