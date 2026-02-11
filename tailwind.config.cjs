@@ -6,6 +6,8 @@ module.exports = {
             fontFamily: {
                 pragati: ['"Pragati Narrow"', "sans-serif"],
                 jacques: ['"Jacques Francois"', "serif"],
+                inter: ["Inter", "system-ui", "sans-serif"],
+
             },
         },
     },

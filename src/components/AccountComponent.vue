@@ -7,7 +7,7 @@ const props = defineProps<{
 const errMsg = ref("")
 
 const linkClass =
-  "px-2 py-2 text-3xl font-normal font-pragati cursor-pointer text-white/70 hover:text-white"
+  "px-2 py-2 text-xl font-normal font-pragati cursor-pointer text-white/70 hover:text-white"
 
 async function submit() {
       errMsg.value = ""
@@ -24,7 +24,7 @@ async function submit() {
 </script>
 
 <template>
-  <div class="flex items-center gap-6">
+  <div class="flex items-center px-3">
       <div v-if="props.isAccount">
           <RouterLink to="/account" :class="linkClass">
           ACCOUNT
