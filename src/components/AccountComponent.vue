@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { logout } from "@/lib/authActions"
+import { useRouter } from "vue-router"
+
+
+const router = useRouter()
+
 const props = defineProps<{
   isAccount?: boolean
 }>()
