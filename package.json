@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
     "@fontsource/jacques-francois": "^5.2.8",
     "@fontsource/pragati-narrow": "^5.2.8",
     "firebase": "^12.9.0",

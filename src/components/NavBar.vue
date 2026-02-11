@@ -25,7 +25,7 @@ onAuthStateChanged(auth, (u) => {
                       v-for="item in NAV_ITEMS"
                       :key="item.to"
                       :to="item.to"
-                      class="px-5 py-2 font-pragati text-3xl font-normal"
+                      class="px-5 py-2 font-pragati text-xl font-normal"
                       >
                       {{ item.label }}
               </RouterLink>

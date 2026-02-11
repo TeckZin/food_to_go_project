@@ -1,6 +1,10 @@
 @import "@fontsource/pragati-narrow/400.css";
 @import "@fontsource/pragati-narrow/700.css";
 @import "@fontsource/jacques-francois/400.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
 
 @import "tailwindcss";
 @config "../tailwind.config.cjs";
