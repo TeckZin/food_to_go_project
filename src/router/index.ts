@@ -16,7 +16,7 @@ export const router = createRouter({
         { path: "/contact", name: "contact", component: ContactView },
         { path: "/store", name: "store", component: StoreView },
         { path: "/auth", name: "auth", component: AuthView },
-        { path: "/account", name: "auth", component: AccountView },
+        { path: "/account", name: "account", component: AccountView },
         { path: "/:pathMatch(.*)*", name: "not-found", component: NotFoundView },
 
     ],
