@@ -1,5 +1,18 @@
 <script setup lang="ts">
+import { ref } from "vue"
 import { NAV_ITEMS } from "./nav.ts"
+import Account from "./AccountComponent.vue"
+import { onAuthStateChanged, type User } from "firebase/auth"
+import { auth } from "@/lib/firebase"
+
+const currentUser = ref<User | null>(null)
+const authReady = ref(false)
+
+onAuthStateChanged(auth, (u) => {
+  currentUser.value = u
+  authReady.value = true
+})
+
 </script>
 
 <template>
@@ -7,7 +20,7 @@ import { NAV_ITEMS } from "./nav.ts"
           <div>
             <img  class="h-25 w-auto px-4 py-4" src="../assets/foodlogo-trans.png" alt="Logo" />
           </div>
-          <nav class="flex w-full justify-center items-center">
+          <nav class="flex  justify-center items-center">
               <RouterLink
                       v-for="item in NAV_ITEMS"
                       :key="item.to"
@@ -17,7 +30,11 @@ import { NAV_ITEMS } from "./nav.ts"
                       {{ item.label }}
               </RouterLink>
           </nav>
-          <div>
+          <div class="flex justify-center items-center">
+                <Account :isAccount="authReady && !!currentUser" />
+
+
+
 
           </div>
 
