@@ -1,8 +1,18 @@
 <script setup lang="ts">
+import { ref } from "vue"
 import { NAV_ITEMS } from "./nav.ts"
 import Account from "./AccountComponent.vue"
+import { onAuthStateChanged, type User } from "firebase/auth"
+import { auth } from "@/lib/firebase"
 
-const showAccount = false
+const currentUser = ref<User | null>(null)
+const authReady = ref(false)
+
+onAuthStateChanged(auth, (u) => {
+  currentUser.value = u
+  authReady.value = true
+})
+
 </script>
 
 <template>
@@ -21,7 +31,8 @@ const showAccount = false
               </RouterLink>
           </nav>
           <div class="flex justify-center items-center">
-              <Account :isAccount="showAccount" />
+                <Account :isAccount="authReady && !!currentUser" />
+
 
 
 
