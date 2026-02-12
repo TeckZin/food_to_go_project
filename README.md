@@ -1,6 +1,6 @@
 # Food To Go (FTG)
 
-Live site: https://www.foodtogo.site/ || https://food-to-go-5706f.web.app/
+Live site: https://www.foodtogo.live/ || https://food-to-go-5706f.web.app/
 
 Food To Go is a web application for college students to browse and order pre-made meals.
 
