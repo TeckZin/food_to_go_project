@@ -28,7 +28,7 @@ const scrollToAbout = () => {
 <template>
   <header class="flex w-full items-center justify-between px-4 py-4">
     <div>
-        <RouterLink to="/" :class="buttonClass">
+        <RouterLink to="/">
           <img
             class="h-20 w-auto"
             src="../assets/foodlogo-trans.png"

@@ -12,14 +12,14 @@ const activeTab = ref<Tab>("edit")
 
 const user = computed(() => auth.currentUser)
 
-const displayName = computed(() => {
+const displayName = computed<string>(() => {
   if (user.value?.displayName) return user.value.displayName
-  if (user.value?.email) return user.value.email.split("@")[0]
+  if (user.value?.email) return user.value.email.split("@")[0] ?? "User"
   return "User"
 })
 
-const email = computed(() => user.value?.email ?? "No email found")
-const emailVerified = computed(() => user.value?.emailVerified ?? false)
+const email = computed<string>(() => user.value?.email ?? "No email found")
+const emailVerified = computed<boolean>(() => user.value?.emailVerified ?? false)
 
 const tabClass = (tab: Tab) =>
   [
@@ -29,7 +29,6 @@ const tabClass = (tab: Tab) =>
       : "text-white/70 border-transparent hover:text-white",
   ].join(" ")
 </script>
-
 <template>
   <main class="min-h-screen bg-[#272B34] px-6 py-10">
     <div class="mx-auto flex w-full max-w-6xl flex-col gap-8 lg:flex-row">
