@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import NavBar from "@/components/NavBar.vue"
+import cheeseBurger from "@/assets/test_items/cheese_burger.jpg"
 
 enum ItemTag {
   BEST_SELLING = "best_selling",
@@ -38,7 +39,7 @@ const items: StoreItem[] = [
     description: "Juicy grilled beef patty with lettuce, tomato, and house sauce.",
     price: 8.99,
     old_price: 10.99,
-    image_url: "https://placehold.co/500x500/png?text=Burger",
+    image_url: cheeseBurger,
     calories: 650,
     qty: 1,
     tag: ItemTag.BEST_SELLING,
