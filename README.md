@@ -1,10 +1,13 @@
 # Food To Go (FTG)
 
-Live site: https://www.foodtogo.site/ || https://food-to-go-5706f.web.app/
+
+Live site: https://www.foodtogo.live/ || https://food-to-go-5706f.web.app/
+
 
 Food To Go is a web application for college students to browse and order pre-made meals.
 
 Built with:
+
 - Vue 3 (`<script setup>`)
 - TypeScript
 - Vite
@@ -18,13 +21,15 @@ Built with:
 
 Create a `.env` file in the root:
 
-VITE_FIREBASE_API_KEY=
-VITE_FIREBASE_AUTH_DOMAIN=
-VITE_FIREBASE_PROJECT_ID=
-VITE_FIREBASE_STORAGE_BUCKET=
-VITE_FIREBASE_MESSAGING_SENDER_ID=
-VITE_FIREBASE_APP_ID=
-VITE_FIREBASE_MEASUREMENT_ID=
+
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_STORAGE_BUCKET=...
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
+VITE_FIREBASE_MEASUREMENT_ID=...
+
 
 Restart dev server after editing env variables.
 
