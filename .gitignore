@@ -47,3 +47,6 @@ ui-debug.log*
 *.sln
 *.sw?
 
+/secrets/
+/serviceAccountKey.json
+
