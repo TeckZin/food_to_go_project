@@ -2,7 +2,6 @@
 import NavBar from "@/components/NavBar.vue"
 import cheeseBurger from "@/assets/test_items/cheese_burger.jpg"
 
-
 const ItemTag = {
   BEST_SELLING: "best_selling",
   POPULAR: "popular",
@@ -19,6 +18,8 @@ const ItemCategory = {
   DESSERT: "dessert",
 } as const
 
+type ItemTag = (typeof ItemTag)[keyof typeof ItemTag]
+type ItemCategory = (typeof ItemCategory)[keyof typeof ItemCategory]
 
 type StoreItem = {
   id: string
