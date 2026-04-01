@@ -2,21 +2,23 @@
 import NavBar from "@/components/NavBar.vue"
 import cheeseBurger from "@/assets/test_items/cheese_burger.jpg"
 
-enum ItemTag {
-  BEST_SELLING = "best_selling",
-  POPULAR = "popular",
-  NEW = "new",
-  HOT = "hot",
-}
 
-enum ItemCategory {
-  BURGERS = "burgers",
-  SANDWICHES = "sandwiches",
-  SIDES = "sides",
-  DRINKS = "drinks",
-  PIZZA = "pizza",
-  DESSERT = "dessert",
-}
+const ItemTag = {
+  BEST_SELLING: "best_selling",
+  POPULAR: "popular",
+  NEW: "new",
+  HOT: "hot",
+} as const
+
+const ItemCategory = {
+  BURGERS: "burgers",
+  SANDWICHES: "sandwiches",
+  SIDES: "sides",
+  DRINKS: "drinks",
+  PIZZA: "pizza",
+  DESSERT: "dessert",
+} as const
+
 
 type StoreItem = {
   id: string

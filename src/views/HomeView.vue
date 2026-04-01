@@ -5,12 +5,6 @@ import AboutComponent from "@/components/AboutComponent.vue"
 const buttonClass =
   "mr-5 rounded-[5rem] border-4 border-[#DBCFB0] px-8 py-4 text-white"
 
-const scrollToAbout = () => {
-  const aboutSection = document.getElementById("about")
-  if (aboutSection) {
-    aboutSection.scrollIntoView({ behavior: "smooth" })
-  }
-}
 </script>
 
 <template>
