@@ -28,11 +28,13 @@ const scrollToAbout = () => {
 <template>
   <header class="flex w-full items-center justify-between px-4 py-4">
     <div>
-      <img
-        class="h-20 w-auto"
-        src="../assets/foodlogo-trans.png"
-        alt="Logo"
-      />
+        <RouterLink to="/" :class="buttonClass">
+          <img
+            class="h-20 w-auto"
+            src="../assets/foodlogo-trans.png"
+            alt="Logo"
+          />
+        </RouterLink>
     </div>
 
     <nav class="flex items-center justify-center gap-6">

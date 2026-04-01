@@ -1,6 +1,27 @@
 <script setup lang="ts">
+import { onMounted, ref } from "vue"
+import { gsap } from "gsap"
 import NavBar from "@/components/NavBar.vue"
 import cheeseBurger from "@/assets/test_items/cheese_burger.jpg"
+
+const cards = ref<HTMLElement[]>([])
+
+const setCardRef = (el: Element | null) => {
+  if (el) {
+    cards.value.push(el as HTMLElement)
+  }
+}
+
+onMounted(() => {
+  gsap.from(cards.value, {
+    opacity: 0,
+    y: 60,
+    scale: 0.85,
+    duration: 0.6,
+    ease: "back.out(1.7)",
+    stagger: 0.15,
+  })
+})
 
 const ItemTag = {
   BEST_SELLING: "best_selling",
@@ -120,6 +141,7 @@ const items: StoreItem[] = [
         <article
           v-for="item in items"
           :key="item.id"
+          :ref="setCardRef"
           class="overflow-hidden rounded-[2rem] border border-white/10 bg-[#1F232B] shadow-[0_10px_40px_rgba(0,0,0,0.25)]"
         >
           <div class="relative border-b border-white/10 bg-[#303642] px-6 py-6">
