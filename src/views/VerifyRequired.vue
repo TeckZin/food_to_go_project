@@ -52,7 +52,6 @@ async function signOut() {
 }
 
 onMounted(() => {
-  // If they are already verified, don’t keep them here
   const user = auth.currentUser
   if (user?.emailVerified) {
     router.replace("/")
