@@ -1,66 +1,60 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from "vue"
+import { onMounted, onBeforeUnmount } from "vue"
 import { useRouter } from "vue-router"
 import NavBar from "@/components/NavBar.vue"
 import AboutComponent from "@/components/AboutComponent.vue"
 
 const router = useRouter()
-const heroRef = ref<HTMLElement | null>(null)
 
 const buttonClass =
   "mr-5 inline-flex rounded-[5rem] border-4 border-cream_yellow px-8 py-4 text-white transition duration-300 hover:bg-cream_yellow hover:text-[#272B34]"
 
 let scrollLock = false
-let downScrollTotal = 0
-let navigateTimeout: ReturnType<typeof setTimeout> | null = null
+let extraScrollAfterBottom = 0
 
-const SCROLL_THRESHOLD = 220
-const NAV_BUFFER_MS = 350
+const EXTRA_SCROLL_THRESHOLD = 180
 
-const resetNavigationBuffer = () => {
-  if (navigateTimeout) {
-    clearTimeout(navigateTimeout)
-    navigateTimeout = null
-  }
+const isAtBottomOfPage = () => {
+  return window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2
 }
 
 const handleWheel = (e: WheelEvent) => {
-  if (!heroRef.value || scrollLock) return
+  if (scrollLock) return
 
-  const rect = heroRef.value.getBoundingClientRect()
-  const heroMostlyVisible = rect.top <= 0 && rect.bottom > window.innerHeight * 0.4
-
-  if (!heroMostlyVisible) {
-    downScrollTotal = 0
-    resetNavigationBuffer()
+  if (!isAtBottomOfPage()) {
+    extraScrollAfterBottom = 0
     return
   }
 
   if (e.deltaY > 0) {
-    downScrollTotal += e.deltaY
+    extraScrollAfterBottom += e.deltaY
   } else {
-    downScrollTotal = 0
-    resetNavigationBuffer()
+    extraScrollAfterBottom = 0
     return
   }
 
-  if (downScrollTotal > SCROLL_THRESHOLD && !navigateTimeout) {
-    navigateTimeout = setTimeout(() => {
-      scrollLock = true
-      router.push("/store").then(() => {
-        window.scrollTo({ top: 0, behavior: "auto" })
-      })
-    }, NAV_BUFFER_MS)
+  if (extraScrollAfterBottom >= EXTRA_SCROLL_THRESHOLD) {
+    scrollLock = true
+    router.push("/store").then(() => {
+      window.scrollTo({ top: 0, behavior: "auto" })
+    })
+  }
+}
+
+const handleScroll = () => {
+  if (!isAtBottomOfPage()) {
+    extraScrollAfterBottom = 0
   }
 }
 
 onMounted(() => {
   window.addEventListener("wheel", handleWheel, { passive: true })
+  window.addEventListener("scroll", handleScroll, { passive: true })
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener("wheel", handleWheel)
-  resetNavigationBuffer()
+  window.removeEventListener("scroll", handleScroll)
 })
 </script>
 
@@ -70,7 +64,6 @@ onBeforeUnmount(() => {
       <NavBar class="w-full" :include-about="true" />
 
       <div
-        ref="heroRef"
         class="flex min-h-screen w-full flex-row overflow-x-hidden"
       >
         <section class="relative z-10 flex w-1/2 flex-col justify-center pl-10">
