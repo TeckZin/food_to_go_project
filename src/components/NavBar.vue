@@ -16,15 +16,8 @@ const authReady = ref(false)
 const headerRef = ref<HTMLElement | null>(null)
 const leftRef = ref<HTMLElement | null>(null)
 const rightRef = ref<HTMLElement | null>(null)
-const navItems = ref<HTMLElement[]>([])
 
 let ctx: gsap.Context | null = null
-
-const setNavItemRef = (el: Element | null) => {
-  if (el) {
-    navItems.value.push(el as HTMLElement)
-  }
-}
 
 onAuthStateChanged(auth, (u) => {
   currentUser.value = u
@@ -40,7 +33,6 @@ const scrollToAbout = () => {
 
 onMounted(async () => {
   await nextTick()
-  navItems.value = navItems.value.filter(Boolean)
 
   ctx = gsap.context(() => {
     if (leftRef.value) {
@@ -48,14 +40,6 @@ onMounted(async () => {
         leftRef.value,
         { x: -40, autoAlpha: 0 },
         { x: 0, autoAlpha: 1, duration: 0.6, ease: "power2.out" }
-      )
-    }
-
-    if (navItems.value.length) {
-      gsap.fromTo(
-        navItems.value,
-        { x: -30, autoAlpha: 0 },
-        { x: 0, autoAlpha: 1, duration: 0.5, ease: "power2.out", stagger: 0.1, delay: 0.2 }
       )
     }
 
@@ -89,22 +73,21 @@ onBeforeUnmount(() => {
     <nav
       class="absolute left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 font-inter text-lg font-semibold tracking-[0.18em] text-white"
     >
-      <RouterLink to="/" :ref="setNavItemRef" class="hover:text-cream_yellow transition">
+      <RouterLink to="/" class="transition hover:text-cream_yellow">
         HOME
       </RouterLink>
 
-      <RouterLink to="/store" :ref="setNavItemRef" class="hover:text-cream_yellow transition">
+      <RouterLink to="/store" class="transition hover:text-cream_yellow">
         STORE
       </RouterLink>
 
-      <RouterLink to="/contact" :ref="setNavItemRef" class="hover:text-cream_yellow transition">
+      <RouterLink to="/contact" class="transition hover:text-cream_yellow">
         CONTACT
       </RouterLink>
 
       <button
         v-if="props.includeAbout"
-        :ref="setNavItemRef"
-        class="hover:text-cream_yellow transition"
+        class="transition hover:text-cream_yellow"
         @click="scrollToAbout"
       >
         ABOUT
