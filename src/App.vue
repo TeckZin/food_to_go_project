@@ -4,10 +4,9 @@
 </script>
 <template>
 
-
-  <div class='bg-[#272B34] w-full h-full text-white overflow-x-hidden'>
-      <RouterView />
-  </div>
+<div class="bg-[#272B34] min-h-screen w-full text-white overflow-x-hidden">
+  <RouterView />
+</div>
 </template>
 
 

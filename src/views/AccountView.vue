@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue"
 import { auth } from "@/lib/firebase"
+import NavBar from "@/components/NavBar.vue"
 import AccountSideComponent from "@/components/AccountSideComponent.vue"
 import EditAccountComponent from "@/components/EditAccountComponent.vue"
 import SettingComponent from "@/components/SettingComponent.vue"
@@ -30,7 +31,10 @@ const tabClass = (tab: Tab) =>
   ].join(" ")
 </script>
 <template>
-  <main class="min-h-screen bg-[#272B34] px-6 py-10">
+  <main class="min-h-screen bg-[#272B34]">
+      <div class="mb-10">
+          <NavBar class="w-full" />
+      </div>
     <div class="mx-auto flex w-full max-w-6xl flex-col gap-8 lg:flex-row">
       <AccountSideComponent
         :display-name="displayName"

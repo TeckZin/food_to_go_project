@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue"
+import NavBar from "@/components/NavBar.vue"
 
 const name = ref("")
 const email = ref("")
@@ -32,7 +33,10 @@ function submitForm() {
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#272B34] px-6 py-10">
+  <main class="min-h-screen bg-[#272B34]">
+      <div class="mb-10">
+          <NavBar class="w-full" />
+      </div>
     <div class="mx-auto w-full max-w-2xl rounded-lg border border-white/10 bg-white/5 p-6">
       <h1 class="text-center text-5xl font-pragati text-white">CONTACT</h1>
       <p class="mt-3 text-center text-white/70">

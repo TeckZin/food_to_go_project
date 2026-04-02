@@ -29,7 +29,7 @@ async function submit() {
 </script>
 
 <template>
-  <div class="flex items-center px-3">
+  <div class="flex items-center px-3 text-lg">
       <div v-if="props.isAccount">
           <RouterLink to="/account" :class="linkClass">
           ACCOUNT

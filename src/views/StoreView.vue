@@ -52,7 +52,7 @@ const items: StoreItem[] = [
     id: "test-1",
     name: "Classic Burger",
     category: ItemCategory.BURGERS,
-    description: "Juicy grilled beef patty with lettuce, tomato, and house sauce.",
+    description: "burger",
     price: 8.99,
     old_price: 10.99,
     image_url: cheeseBurger,
@@ -64,7 +64,7 @@ const items: StoreItem[] = [
     id: "test-2",
     name: "Crispy Chicken Sandwich",
     category: ItemCategory.SANDWICHES,
-    description: "Crispy fried chicken with pickles and spicy mayo on a toasted bun.",
+    description: "chicken",
     price: 9.49,
     old_price: 11.49,
     image_url: "https://placehold.co/500x500/png?text=Chicken",
@@ -76,7 +76,7 @@ const items: StoreItem[] = [
     id: "test-3",
     name: "Loaded Fries",
     category: ItemCategory.SIDES,
-    description: "Golden fries topped with cheese sauce, bacon bits, and scallions.",
+    description: "fries",
     price: 5.99,
     old_price: 7.49,
     image_url: "https://placehold.co/500x500/png?text=Fries",
@@ -88,7 +88,7 @@ const items: StoreItem[] = [
     id: "test-4",
     name: "Iced Matcha Latte",
     category: ItemCategory.DRINKS,
-    description: "Smooth iced matcha with milk, lightly sweetened and refreshing.",
+    description: "drink matcha",
     price: 4.99,
     old_price: 5.99,
     image_url: "https://placehold.co/500x500/png?text=Matcha",
@@ -100,7 +100,7 @@ const items: StoreItem[] = [
     id: "test-5",
     name: "Pepperoni Pizza Slice",
     category: ItemCategory.PIZZA,
-    description: "Hot oversized slice with pepperoni, mozzarella, and rich tomato sauce.",
+    description: "normal pizza",
     price: 4.5,
     old_price: 5.5,
     image_url: "https://placehold.co/500x500/png?text=Pizza",
@@ -112,7 +112,7 @@ const items: StoreItem[] = [
     id: "test-6",
     name: "Chocolate Brownie",
     category: ItemCategory.DESSERT,
-    description: "Rich chocolate brownie with a soft center and crisp top.",
+    description: "just chocolate",
     price: 3.75,
     old_price: 4.5,
     image_url: "https://placehold.co/500x500/png?text=Brownie",
@@ -124,77 +124,77 @@ const items: StoreItem[] = [
 
 <template>
   <div class="min-h-screen w-full bg-[#272B34] text-white">
-    <section class="mx-auto w-full max-w-[1600px] px-6 py-10 md:px-10">
       <div class="mb-10">
-        <NavBar class="w-full" />
+          <NavBar class="w-full" />
       </div>
+    <section class="mx-auto w-full max-w-[1600px] px-6 py-10 md:px-10">
 
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <article
-          v-for="item in items"
-          :key="item.id"
-          class="store-card overflow-hidden rounded-[2rem] border border-white/10 bg-[#1F232B] shadow-[0_10px_40px_rgba(0,0,0,0.25)]"
-        >
-          <div class="relative border-b border-white/10 bg-[#303642] px-6 py-6">
-            <div
-              v-if="item.tag"
-              class="absolute left-5 top-5 rounded-full border border-[#DBCFB0]/60 px-3 py-1 font-inter text-xs font-semibold tracking-wide text-[#DBCFB0]"
-            >
-              {{ item.tag }}
-            </div>
-
-            <div class="flex min-h-[320px] items-center justify-center pt-10">
-              <img
-                :src="item.image_url"
-                :alt="item.name"
-                class="h-[240px] w-[240px] rounded-[1.5rem] object-cover shadow-lg"
-              />
-            </div>
-          </div>
-
-          <div class="px-6 py-6">
-            <p class="font-inter text-sm font-semibold uppercase tracking-[0.2em] text-[#DBCFB0]">
-              {{ item.category }}
-            </p>
-
-            <h2 class="mt-3 font-inter text-3xl font-bold text-white">
-              {{ item.name }}
-            </h2>
-
-            <p class="mt-3 min-h-[72px] font-inter text-base leading-7 text-white/70">
-              {{ item.description }}
-            </p>
-
-            <p class="mt-2 font-inter text-sm text-white/50">
-              {{ item.calories }} cal · Qty: {{ item.qty }}
-            </p>
-
-            <div class="mt-5 flex items-center gap-3 font-inter">
-              <span
-                v-if="item.old_price"
-                class="text-2xl font-semibold text-white/35 line-through"
+          <div
+            v-for="item in items"
+            :key="item.id"
+            class="store-card overflow-hidden rounded-[2rem] border border-white/10 bg-[#1F232B] shadow-[0_0.625rem_2.5rem_rgba(0,0,0,0.25)]"
+          >
+            <div class="relative border-b border-white/10 bg-[#303642] px-6 py-6">
+              <div
+                v-if="item.tag"
+                class="absolute left-5 top-5 rounded-full border border-[#DBCFB0]/60 px-3 py-1 font-inter text-xs font-semibold tracking-[0.08em] text-[#DBCFB0]"
               >
-                ${{ item.old_price.toFixed(2) }}
-              </span>
-              <span class="text-3xl font-bold text-[#DBCFB0]">
-                ${{ item.price.toFixed(2) }}
-              </span>
+                {{ item.tag }}
+              </div>
+
+              <div class="flex min-h-[20rem] items-center justify-center pt-10">
+                <img
+                  :src="item.image_url"
+                  :alt="item.name"
+                  class="h-[15rem] w-[15rem] rounded-[1.5rem] object-cover shadow-lg"
+                />
+              </div>
             </div>
 
-            <button
-              class="mt-6 w-full rounded-full bg-[#DBCFB0] px-6 py-4 font-inter text-sm font-extrabold uppercase tracking-[0.18em] text-[#272B34] transition hover:scale-[1.01]"
-            >
-              Order Now
-            </button>
+            <div class="px-6 py-6">
+              <p class="font-inter text-sm font-semibold uppercase tracking-[0.2em] text-[#DBCFB0]">
+                {{ item.category }}
+              </p>
 
-            <p
-              class="mt-4 text-center font-inter text-sm font-medium uppercase tracking-wide text-white/50"
-            >
-              Fast pickup on campus
-            </p>
+              <h2 class="mt-3 font-inter text-3xl font-bold text-white">
+                {{ item.name }}
+              </h2>
+
+              <p class="mt-3 min-h-[4.5rem] font-inter text-base leading-7 text-white/70">
+                {{ item.description }}
+              </p>
+
+              <p class="mt-2 font-inter text-sm text-white/50">
+                {{ item.calories }} cal · Qty: {{ item.qty }}
+              </p>
+
+              <div class="mt-5 flex items-center gap-3 font-inter">
+                <span
+                  v-if="item.old_price"
+                  class="text-2xl font-semibold text-white/35 line-through"
+                >
+                  ${{ item.old_price.toFixed(2) }}
+                </span>
+                <span class="text-3xl font-bold text-[#DBCFB0]">
+                  ${{ item.price.toFixed(2) }}
+                </span>
+              </div>
+
+              <button
+                class="mt-6 w-full rounded-full bg-[#DBCFB0] px-6 py-4 font-inter text-sm font-extrabold uppercase tracking-[0.18em] text-[#272B34] transition hover:scale-[1.01]"
+              >
+                Order Now
+              </button>
+
+              <p
+                class="mt-4 text-center font-inter text-sm font-medium uppercase tracking-[0.05em] text-white/50"
+              >
+                Fast pickup on campus
+              </p>
+            </div>
           </div>
-        </article>
-      </div>
+        </div>
     </section>
   </div>
 </template>

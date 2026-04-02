@@ -11,7 +11,6 @@ import NotFoundView from "../views/NotFoundView.vue"
 
 const routes = [
     { path: "/", name: "home", component: HomeView },
-    // { path: "/about", name: "about", component: AboutView },
     { path: "/contact", name: "contact", component: ContactView },
     { path: "/store", name: "store", component: StoreView },
     { path: "/auth", name: "auth", component: AuthView },
@@ -23,6 +22,9 @@ const routes = [
 export const router = createRouter({
     history: createWebHistory(),
     routes,
+    scrollBehavior() {
+        return { top: 0 }
+    },
 })
 
 function waitForAuthReady() {
@@ -59,4 +61,3 @@ router.beforeEach(async (to) => {
 
     return true
 })
-
