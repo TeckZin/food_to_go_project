@@ -7,7 +7,7 @@ import AboutComponent from "@/components/AboutComponent.vue"
 const router = useRouter()
 
 const buttonClass =
-  "mr-5 inline-flex rounded-[5rem] border-4 border-cream_yellow px-8 py-4 text-white transition duration-300 hover:bg-cream_yellow hover:text-[#272B34]"
+  "inline-flex items-center justify-center rounded-[5rem] border-4 border-cream_yellow px-6 py-3 text-base text-white transition duration-300 hover:bg-cream_yellow hover:text-[#272B34] sm:px-8 sm:py-4 sm:text-lg"
 
 let scrollLock = false
 let extraScrollAfterBottom = 0
@@ -63,18 +63,22 @@ onBeforeUnmount(() => {
     <main class="flex w-full flex-col">
       <NavBar class="w-full" :include-about="true" />
 
-      <div
-        class="flex min-h-screen w-full flex-row overflow-x-hidden"
-      >
-        <section class="relative z-10 flex w-1/2 flex-col justify-center pl-10">
-          <div class="flex flex-col py-10 font-jacques text-8xl leading-[0.95] text-white">
+      <div class="flex min-h-screen w-full flex-col overflow-x-hidden lg:flex-row">
+        <section
+          class="relative z-10 flex w-full flex-col justify-center px-6 py-12 sm:px-10 md:px-14 lg:w-1/2 lg:pl-10 lg:pr-6"
+        >
+          <div
+            class="flex flex-col py-6 font-jacques text-4xl leading-[0.95] text-white sm:text-5xl md:text-6xl lg:py-10 lg:text-7xl xl:text-8xl"
+          >
             <p>FRESH,</p>
             <p>MEALS, FAST</p>
             <p>DELIVER TO</p>
             <p>CAMPUS</p>
           </div>
 
-          <div class="flex flex-row items-center py-5 font-inter text-4xl text-white">
+          <div
+            class="flex flex-col gap-4 py-5 font-inter text-xl text-white sm:text-2xl md:flex-row md:items-center lg:text-3xl xl:text-4xl"
+          >
             <RouterLink to="/store" :class="buttonClass">
               STORE
             </RouterLink>
@@ -85,9 +89,11 @@ onBeforeUnmount(() => {
           </div>
         </section>
 
-        <section class="relative w-1/2 overflow-hidden">
+        <section
+          class="relative flex min-h-[18rem] w-full items-center justify-center overflow-hidden px-4 py-8 lg:min-h-screen lg:w-1/2"
+        >
           <div
-            class="pointer-events-none absolute left-[3rem] top-1/4 translate-y-1/8 rotate-[-28deg] font-inter text-[35rem] font-extrabold leading-none tracking-tight text-cream_yellow"
+            class="pointer-events-none select-none font-inter font-extrabold leading-none tracking-tight text-cream_yellow opacity-90 text-[8rem] sm:text-[12rem] md:text-[16rem] lg:absolute lg:left-[2rem] lg:top-1/2 lg:-translate-y-1/2 lg:rotate-[-28deg] lg:text-[20rem] xl:left-[3rem] xl:text-[28rem]"
           >
             FTG
           </div>

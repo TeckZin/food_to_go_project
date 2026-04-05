@@ -18,11 +18,7 @@ const leftRef = ref<HTMLElement | null>(null)
 const rightRef = ref<HTMLElement | null>(null)
 
 let ctx: gsap.Context | null = null
-
-onAuthStateChanged(auth, (u) => {
-  currentUser.value = u
-  authReady.value = true
-})
+let unsubscribeAuth: (() => void) | null = null
 
 const scrollToAbout = () => {
   const aboutSection = document.getElementById("about")
@@ -32,6 +28,11 @@ const scrollToAbout = () => {
 }
 
 onMounted(async () => {
+  unsubscribeAuth = onAuthStateChanged(auth, (u) => {
+    currentUser.value = u
+    authReady.value = true
+  })
+
   await nextTick()
 
   ctx = gsap.context(() => {
@@ -39,7 +40,7 @@ onMounted(async () => {
       gsap.fromTo(
         leftRef.value,
         { x: -40, autoAlpha: 0 },
-        { x: 0, autoAlpha: 1, duration: 0.6, ease: "power2.out" }
+        { x: 0, autoAlpha: 1, duration: 0.6, ease: "power2.out" },
       )
     }
 
@@ -47,23 +48,27 @@ onMounted(async () => {
       gsap.fromTo(
         rightRef.value,
         { x: 40, autoAlpha: 0 },
-        { x: 0, autoAlpha: 1, duration: 0.6, ease: "power2.out", delay: 0.3 }
+        { x: 0, autoAlpha: 1, duration: 0.6, ease: "power2.out", delay: 0.3 },
       )
     }
   }, headerRef.value as HTMLElement)
 })
 
 onBeforeUnmount(() => {
+  unsubscribeAuth?.()
   ctx?.revert()
 })
 </script>
 
 <template>
-  <header ref="headerRef" class="relative flex w-full items-center px-6 py-5">
-    <div ref="leftRef">
+  <header
+    ref="headerRef"
+    class="relative flex w-full flex-col gap-4 px-4 py-4 sm:px-6 md:gap-5 lg:flex-row lg:items-center lg:justify-between lg:px-8 lg:py-5"
+  >
+    <div ref="leftRef" class="flex justify-center lg:justify-start">
       <RouterLink to="/" class="flex items-center gap-3">
         <img
-          class="h-[6rem] w-auto"
+          class="h-[4.5rem] w-auto sm:h-[5rem] md:h-[5.5rem] lg:h-[6rem]"
           src="../assets/foodlogo-trans.png"
           alt="Logo"
         />
@@ -71,7 +76,7 @@ onBeforeUnmount(() => {
     </div>
 
     <nav
-      class="absolute left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 font-inter text-lg font-semibold tracking-[0.18em] text-white"
+      class="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 font-inter text-sm font-semibold tracking-[0.12em] text-white sm:gap-x-6 sm:text-base md:text-lg lg:absolute lg:left-1/2 lg:top-1/2 lg:w-auto lg:-translate-x-1/2 lg:-translate-y-1/2 lg:flex-nowrap lg:gap-8 lg:tracking-[0.18em]"
     >
       <RouterLink to="/" class="transition hover:text-cream_yellow">
         HOME
@@ -87,6 +92,7 @@ onBeforeUnmount(() => {
 
       <button
         v-if="props.includeAbout"
+        type="button"
         class="transition hover:text-cream_yellow"
         @click="scrollToAbout"
       >
@@ -94,7 +100,10 @@ onBeforeUnmount(() => {
       </button>
     </nav>
 
-    <div ref="rightRef" class="ml-auto flex items-center">
+    <div
+      ref="rightRef"
+      class="flex justify-center lg:ml-auto lg:justify-end"
+    >
       <Account :isAccount="authReady && !!currentUser" />
     </div>
   </header>
