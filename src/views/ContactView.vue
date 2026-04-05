@@ -45,8 +45,7 @@ const contacts: ContactOption[] = [
   },
 ]
 
-const selectedContact = ref<ContactOption>(contacts[0])
-
+const selectedContact = ref<ContactOption>(contacts[0]!)
 const inputClass =
   "w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white outline-none placeholder:text-white/40"
 
