@@ -1,8 +1,25 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut } from "firebase/auth"
-import { auth } from "./firebase"
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    sendEmailVerification,
+    signOut,
+} from "firebase/auth"
+import { doc, serverTimestamp, setDoc } from "firebase/firestore"
+import { auth, db } from "./firebase"
 
 export async function signUpEmail(email: string, password: string) {
     const cred = await createUserWithEmailAndPassword(auth, email, password)
+
+    await setDoc(doc(db, "users", cred.user.uid), {
+        uid: cred.user.uid,
+        email: cred.user.email,
+        displayName: cred.user.displayName ?? "",
+        role: "customer",
+        status: "active",
+        emailVerified: cred.user.emailVerified,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+    })
 
     await sendEmailVerification(cred.user, {
         url: `${window.location.origin}/verify-required`,
@@ -38,11 +55,14 @@ export async function logout() {
 
 export async function resendVerificationEmail() {
     const user = auth.currentUser
-    if (!user) throw Object.assign(new Error("Not signed in."), { code: "auth/not-signed-in" })
+    if (!user) {
+        throw Object.assign(new Error("Not signed in."), {
+            code: "auth/not-signed-in",
+        })
+    }
 
     await sendEmailVerification(user, {
         url: `${window.location.origin}/verify-required`,
         handleCodeInApp: false,
     })
 }
-

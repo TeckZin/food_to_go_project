@@ -7,11 +7,13 @@ import ContactView from "@/views/ContactView.vue"
 import AuthView from "@/views/AuthView.vue"
 import AccountView from "@/views/AccountView.vue"
 import VerifyView from "@/views/VerifyRequired.vue"
+import ShoppingCartView from "@/views/ShoppingCartView.vue"
 import NotFoundView from "../views/NotFoundView.vue"
 
 const routes = [
     { path: "/", name: "home", component: HomeView },
     { path: "/contact", name: "contact", component: ContactView },
+    { path: "/cart", name: "car", component: ShoppingCartView },
     { path: "/store", name: "store", component: StoreView },
     { path: "/auth", name: "auth", component: AuthView },
     { path: "/verify-required", name: "verify-required", component: VerifyView },

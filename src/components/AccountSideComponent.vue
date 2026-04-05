@@ -7,6 +7,9 @@ const props = defineProps<{
   displayName: string
   email: string
   emailVerified: boolean
+  role: string
+  claimsLoading: boolean
+  claimsError: string
 }>()
 
 const router = useRouter()
@@ -65,7 +68,21 @@ async function handleResendVerification() {
           {{ props.emailVerified ? "Verified" : "Not Verified" }}
         </p>
       </div>
+
+      <div>
+        <p class="text-sm text-white/50">Role</p>
+        <p v-if="props.claimsLoading" class="text-lg font-medium text-white">
+          Loading...
+        </p>
+        <p v-else class="text-lg font-medium text-white">
+          {{ props.role }}
+        </p>
+      </div>
     </div>
+
+    <p v-if="props.claimsError" class="mt-4 text-sm text-red-300">
+      {{ props.claimsError }}
+    </p>
 
     <p v-if="message" class="mt-4 text-sm text-green-300">
       {{ message }}
