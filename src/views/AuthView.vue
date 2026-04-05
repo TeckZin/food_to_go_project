@@ -18,8 +18,10 @@ watchEffect(() => {
   }
 })
 
+const displayName = ref("")
 const email = ref("")
 const password = ref("")
+const confirmPassword = ref("")
 const errorMsg = ref("")
 
 const tabClass = (tab: Mode) =>
@@ -36,15 +38,38 @@ const btnClass =
 
 async function submit() {
   errorMsg.value = ""
+
   try {
+    const trimmedEmail = email.value.trim()
+    const trimmedDisplayName = displayName.value.trim()
+
+    if (!trimmedEmail) {
+      errorMsg.value = "Email is required."
+      return
+    }
+
+    if (!password.value) {
+      errorMsg.value = "Password is required."
+      return
+    }
+
     if (mode.value === "login") {
-      await loginEmail(email.value.trim(), password.value)
+      await loginEmail(trimmedEmail, password.value)
       router.push("/")
       return
     }
 
-    // signup
-    await signUpEmail(email.value.trim(), password.value)
+    if (!trimmedDisplayName) {
+      errorMsg.value = "Display name is required."
+      return
+    }
+
+    if (password.value !== confirmPassword.value) {
+      errorMsg.value = "Passwords do not match."
+      return
+    }
+
+    await signUpEmail(trimmedEmail, password.value, trimmedDisplayName)
     router.push("/verify-required")
   } catch (e: any) {
     if (e?.code === "auth/email-not-verified") {
@@ -71,8 +96,35 @@ async function submit() {
       </div>
 
       <div class="mt-6 space-y-3">
-        <input v-model="email" type="email" placeholder="Email" :class="inputClass" />
-        <input v-model="password" type="password" placeholder="Password" :class="inputClass" />
+        <input
+          v-if="mode === 'signup'"
+          v-model="displayName"
+          type="text"
+          placeholder="Display Name / Username"
+          :class="inputClass"
+        />
+
+        <input
+          v-model="email"
+          type="email"
+          placeholder="Email"
+          :class="inputClass"
+        />
+
+        <input
+          v-model="password"
+          type="password"
+          placeholder="Password"
+          :class="inputClass"
+        />
+
+        <input
+          v-if="mode === 'signup'"
+          v-model="confirmPassword"
+          type="password"
+          placeholder="Confirm Password"
+          :class="inputClass"
+        />
 
         <p v-if="errorMsg" class="text-sm text-red-300">
           {{ errorMsg }}
@@ -85,4 +137,3 @@ async function submit() {
     </div>
   </main>
 </template>
-

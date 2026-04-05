@@ -3,20 +3,36 @@ import {
     signInWithEmailAndPassword,
     sendEmailVerification,
     signOut,
+    updateProfile,
 } from "firebase/auth"
-import { doc, serverTimestamp, setDoc } from "firebase/firestore"
+import { doc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore"
 import { auth, db } from "./firebase"
 
-export async function signUpEmail(email: string, password: string) {
+export async function signUpEmail(
+    email: string,
+    password: string,
+    displayName: string,
+) {
     const cred = await createUserWithEmailAndPassword(auth, email, password)
+
+    await updateProfile(cred.user, {
+        displayName,
+    })
 
     await setDoc(doc(db, "users", cred.user.uid), {
         uid: cred.user.uid,
-        email: cred.user.email,
-        displayName: cred.user.displayName ?? "",
+        email: cred.user.email ?? email,
+        displayName,
         role: "customer",
         status: "active",
         emailVerified: cred.user.emailVerified,
+        phoneNumber: "",
+        deliveryAddress: "",
+        campusLocation: "",
+        notifications: true,
+        marketingEmails: false,
+        darkMode: true,
+        disabled: false,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
     })
@@ -45,6 +61,11 @@ export async function loginEmail(email: string, password: string) {
         err.code = "auth/email-not-verified"
         throw err
     }
+
+    await updateDoc(doc(db, "users", cred.user.uid), {
+        emailVerified: cred.user.emailVerified,
+        updatedAt: serverTimestamp(),
+    })
 
     return cred.user
 }

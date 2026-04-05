@@ -98,8 +98,6 @@ onMounted(() => {
     userRole.value = state.role
     canManageItems.value = state.canManageItems
 
-    console.log("store role:", state.role)
-    console.log("can manage items:", state.canManageItems)
   })
 
   loadItems()
