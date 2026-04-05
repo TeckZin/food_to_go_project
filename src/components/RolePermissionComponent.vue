@@ -8,10 +8,6 @@ defineProps<{
   canResetPasswords: boolean
 }>()
 
-type PermissionRow = {
-  label: string
-  allowed: boolean
-}
 </script>
 
 <template>
