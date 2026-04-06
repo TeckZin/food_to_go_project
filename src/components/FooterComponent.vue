@@ -9,13 +9,13 @@ const engineers = [
   },
   {
     name: "Engineer Two",
-    github: "https://github.com/engineer-two",
+    github: "https://github.com/dot11atwit",
     linkedin: "https://linkedin.com/in/engineer-two",
   },
   {
-    name: "Engineer Three",
+    name: "Thomas Do",
     github: "https://github.com/engineer-three",
-    linkedin: "https://linkedin.com/in/engineer-three",
+    linkedin: "https://www.linkedin.com/in/thomas-do-342492330/",
   },
 ]
 </script>

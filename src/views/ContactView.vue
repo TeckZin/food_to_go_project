@@ -33,9 +33,9 @@ const contacts: ContactOption[] = [
     email: "engineer.two@example.com",
   },
   {
-    name: "Engineer Three",
-    role: "Engineer",
-    email: "engineer.three@example.com",
+    name: "Thomas Do",
+    github: "https://github.com/engineer-three",
+    linkedin: "https://www.linkedin.com/in/thomas-do-342492330/",
   },
   {
     name: "All Engineers",
