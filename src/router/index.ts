@@ -9,12 +9,16 @@ import AccountView from "@/views/AccountView.vue"
 import VerifyView from "@/views/VerifyRequired.vue"
 import ShoppingCartView from "@/views/ShoppingCartView.vue"
 import NotFoundView from "../views/NotFoundView.vue"
+import CheckoutView from "@/views/CheckOutView.vue"
+import ConfirmView from "@/views/ConfirmView.vue"
 
 const routes = [
     { path: "/", name: "home", component: HomeView },
     { path: "/contact", name: "contact", component: ContactView },
-    { path: "/cart", name: "car", component: ShoppingCartView },
+    { path: "/cart", name: "cart", component: ShoppingCartView },
     { path: "/store", name: "store", component: StoreView },
+    { path: "/checkout", name: "check-out", component: CheckoutView },
+    { path: "/confirm", name: "confirm", component: ConfirmView },
     { path: "/auth", name: "auth", component: AuthView },
     { path: "/verify-required", name: "verify-required", component: VerifyView },
     { path: "/account", name: "account", component: AccountView, meta: { requiresVerified: true } },
