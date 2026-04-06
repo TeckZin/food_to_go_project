@@ -12,7 +12,7 @@
         About
       </h2>
       <p class="font-inter text-lg leading-relaxed text-white sm:text-xl md:text-2xl">
-        this is about us
+      FoodToGo is a food delivery platform made for students, by students. We know how hard it can be to find good, affordable meals near campus, especially when we're busy with our loaded schedules. Our goal is to make it easier for students to get tasty, high-quality food without spending too much money. With FoodToGo, you can explore different meal options and have them delivered right to you.
       </p>
     </div>
   </section>
