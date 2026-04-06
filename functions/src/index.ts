@@ -102,3 +102,133 @@ export const getUserTokenRoles = onCall(async (request) => {
         )
     }
 })
+
+export const updateUserAccount = onCall(async (request) => {
+    if (!request.auth) {
+        throw new HttpsError("unauthenticated", "You must be signed in.")
+    }
+
+    if (request.auth.token.role !== "admin") {
+        throw new HttpsError("permission-denied", "Only admins can update users.")
+    }
+
+    const uid = String(request.data?.uid ?? "").trim()
+    const displayName = String(request.data?.displayName ?? "").trim()
+    const phoneNumberRaw = String(request.data?.phoneNumber ?? "").trim()
+    const disabled = Boolean(request.data?.disabled)
+
+    if (!uid) {
+        throw new HttpsError("invalid-argument", "Missing uid.")
+    }
+
+    const updatePayload: admin.auth.UpdateRequest = {
+        disabled,
+    }
+
+    if (displayName) {
+        updatePayload.displayName = displayName
+    }
+
+    if (phoneNumberRaw) {
+        updatePayload.phoneNumber = phoneNumberRaw
+    }
+
+    try {
+        await admin.auth().updateUser(uid, updatePayload)
+
+        await firestore.collection("users").doc(uid).set(
+            {
+                displayName: displayName || "",
+                phoneNumber: phoneNumberRaw || "",
+                status: disabled ? "disabled" : "active",
+                updatedAt: FieldValue.serverTimestamp(),
+            },
+            { merge: true },
+        )
+
+        return {
+            success: true,
+            uid,
+            message: "User account updated successfully.",
+        }
+    } catch (error: any) {
+        console.error("updateUserAccount error:", error)
+        throw new HttpsError(
+            "internal",
+            error?.message ?? "Failed to update user account.",
+        )
+    }
+})
+
+export const sendUserPasswordReset = onCall(async (request) => {
+    if (!request.auth) {
+        throw new HttpsError("unauthenticated", "You must be signed in.")
+    }
+
+    if (request.auth.token.role !== "admin") {
+        throw new HttpsError("permission-denied", "Only admins can reset passwords.")
+    }
+
+    const uid = String(request.data?.uid ?? "").trim()
+
+    if (!uid) {
+        throw new HttpsError("invalid-argument", "Missing uid.")
+    }
+
+    try {
+        const user = await admin.auth().getUser(uid)
+
+        if (!user.email) {
+            throw new HttpsError("failed-precondition", "User does not have an email.")
+        }
+
+        const resetLink = await admin.auth().generatePasswordResetLink(user.email)
+
+        return {
+            success: true,
+            uid,
+            email: user.email,
+            resetLink,
+            message: "Password reset link generated successfully.",
+        }
+    } catch (error: any) {
+        console.error("sendUserPasswordReset error:", error)
+        throw new HttpsError(
+            "internal",
+            error?.message ?? "Failed to generate password reset link.",
+        )
+    }
+})
+
+export const deleteUserAccount = onCall(async (request) => {
+    if (!request.auth) {
+        throw new HttpsError("unauthenticated", "You must be signed in.")
+    }
+
+    if (request.auth.token.role !== "admin") {
+        throw new HttpsError("permission-denied", "Only admins can delete users.")
+    }
+
+    const uid = String(request.data?.uid ?? "").trim()
+
+    if (!uid) {
+        throw new HttpsError("invalid-argument", "Missing uid.")
+    }
+
+    try {
+        await admin.auth().deleteUser(uid)
+        await firestore.collection("users").doc(uid).delete()
+
+        return {
+            success: true,
+            uid,
+            message: "User deleted from Auth and Firestore.",
+        }
+    } catch (error: any) {
+        console.error("deleteUserAccount error:", error)
+        throw new HttpsError(
+            "internal",
+            error?.message ?? "Failed to delete user account.",
+        )
+    }
+})

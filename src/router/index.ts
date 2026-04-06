@@ -11,11 +11,15 @@ import ShoppingCartView from "@/views/ShoppingCartView.vue"
 import NotFoundView from "../views/NotFoundView.vue"
 import CheckoutView from "@/views/CheckOutView.vue"
 import ConfirmView from "@/views/ConfirmView.vue"
+import ManageView from "@/views/ManageView.vue"
+import ManageUserDetailView from "@/views/ManageUserDetailView.vue"
 
 const routes = [
     { path: "/", name: "home", component: HomeView },
     { path: "/contact", name: "contact", component: ContactView },
+    { path: "/manage", name: "manage", component: ManageView },
     { path: "/cart", name: "cart", component: ShoppingCartView },
+    { path: "/manage-user/:userId", name: "manage-user-detail", component: ManageUserDetailView },
     { path: "/store", name: "store", component: StoreView },
     { path: "/checkout", name: "check-out", component: CheckoutView },
     { path: "/confirm", name: "confirm", component: ConfirmView },

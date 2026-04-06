@@ -35,8 +35,10 @@ const handleWheel = (e: WheelEvent) => {
 
   if (extraScrollAfterBottom >= EXTRA_SCROLL_THRESHOLD) {
     scrollLock = true
-    router.push("/store").then(() => {
+    router.push("/store").finally(() => {
       window.scrollTo({ top: 0, behavior: "auto" })
+      extraScrollAfterBottom = 0
+      scrollLock = false
     })
   }
 }
@@ -61,11 +63,13 @@ onBeforeUnmount(() => {
 <template>
   <div class="w-full overflow-x-hidden bg-[#272B34]">
     <main class="flex w-full flex-col">
-      <NavBar class="w-full" :include-about="true" />
+      <div class="relative z-[200]">
+        <NavBar class="w-full" :include-about="true" />
+      </div>
 
-      <div class="flex min-h-screen w-full flex-col overflow-x-hidden lg:flex-row">
+      <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden lg:flex-row">
         <section
-          class="relative z-10 flex w-full flex-col justify-center px-6 py-12 sm:px-10 md:px-14 lg:w-1/2 lg:pl-10 lg:pr-6"
+          class="relative flex w-full flex-col justify-center px-6 py-12 sm:px-10 md:px-14 lg:w-1/2 lg:pl-10 lg:pr-6"
         >
           <div
             class="flex flex-col py-6 font-jacques text-4xl leading-[0.95] text-white sm:text-5xl md:text-6xl lg:py-10 lg:text-7xl xl:text-8xl"

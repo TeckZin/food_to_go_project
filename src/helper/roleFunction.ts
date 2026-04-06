@@ -191,3 +191,79 @@ export function watchRoleState(callback: (state: RoleState) => void) {
         callback(state)
     })
 }
+
+export async function deleteTargetUserAccount(uid: string) {
+    if (!uid) {
+        throw new Error("Missing uid.")
+    }
+
+    try {
+        const currentUser = auth.currentUser
+        if (currentUser) {
+            await currentUser.getIdToken(true)
+        }
+
+        const callable = httpsCallable<
+            { uid: string },
+            { success: boolean; uid: string; message: string }
+        >(functions, "deleteUserAccount")
+
+        const result = await callable({ uid })
+
+        return result.data
+    } catch (error) {
+        console.error("Failed to delete user:", error)
+        throw error
+    }
+}
+
+export async function updateTargetUserAccount(payload: {
+    uid: string
+    displayName?: string
+    phoneNumber?: string
+    disabled: boolean
+}) {
+    try {
+        const currentUser = auth.currentUser
+        if (currentUser) {
+            await currentUser.getIdToken(true)
+        }
+
+        const callable = httpsCallable<
+            {
+                uid: string
+                displayName?: string
+                phoneNumber?: string
+                disabled: boolean
+            },
+            { success: boolean; message: string }
+        >(functions, "updateUserAccount")
+
+        const result = await callable(payload)
+
+        return result.data
+    } catch (error) {
+        console.error("Failed to update user:", error)
+        throw error
+    }
+}
+
+export async function generateTargetUserPasswordReset(uid: string) {
+    if (!uid) {
+        throw new Error("Missing uid.")
+    }
+
+    try {
+        const callable = httpsCallable<
+            { uid: string },
+            { success: boolean; email: string; resetLink: string }
+        >(functions, "sendUserPasswordReset")
+
+        const result = await callable({ uid })
+
+        return result.data
+    } catch (error) {
+        console.error("Failed to reset password:", error)
+        throw error
+    }
+}

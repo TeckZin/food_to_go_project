@@ -1,26 +1,22 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue"
-import {
-  collection,
-  getDocs,
-  doc,
-  updateDoc,
-  deleteDoc,
-  serverTimestamp,
-} from "firebase/firestore"
+import { collection, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import {
   getAllUserTokenRoles,
-  setTargetUserRole,
   type UserRole,
 } from "@/helper/roleFunction"
+import OrderHistoryModal from "@/components/OrderHistoryModal.vue"
+import ViewUserModal from "@/components/ViewUserModal.vue"
+import EditUserModal from "@/components/EditUserModal.vue"
 
 type AppUser = {
   id: string
   displayName: string
   email: string
+  phoneNumber: string
   firestoreRole: UserRole
-  tokenRole: UserRole | "loading..." | "unavailable"
+  tokenRole: UserRole | "loading..." | "unavailable" | ""
   status: string
 }
 
@@ -33,10 +29,13 @@ const loading = ref(true)
 const errorMsg = ref("")
 const successMsg = ref("")
 
-const editingUserId = ref("")
-const editDisplayName = ref("")
-const editRole = ref<UserRole>("")
-const editStatus = ref("")
+const viewModalOpen = ref(false)
+const editModalOpen = ref(false)
+const orderModalOpen = ref(false)
+
+const selectedUser = ref<AppUser | null>(null)
+const selectedUserId = ref("")
+const selectedUserName = ref("")
 
 async function loadUsers() {
   loading.value = true
@@ -48,18 +47,20 @@ async function loadUsers() {
 
     users.value = snapshot.docs.map((snap) => {
       const data = snap.data()
-      const firestoreRole =
+
+      const firestoreRole: UserRole =
         data.role === "admin" || data.role === "manager" || data.role === "customer"
           ? data.role
           : "customer"
 
       return {
         id: snap.id,
-        displayName: data.displayName ?? "",
-        email: data.email ?? "",
+        displayName: String(data.displayName ?? ""),
+        email: String(data.email ?? ""),
+        phoneNumber: String(data.phoneNumber ?? ""),
         firestoreRole,
         tokenRole: "loading...",
-        status: data.status ?? "active",
+        status: String(data.status ?? "active"),
       }
     })
   } catch (e: any) {
@@ -102,77 +103,63 @@ async function loadUsers() {
   }
 }
 
-function startEdit(user: AppUser) {
-  if (!props.isAdmin) return
-
-  editingUserId.value = user.id
-  editDisplayName.value = user.displayName
-  editRole.value =
-    user.firestoreRole === "admin" ||
-    user.firestoreRole === "manager" ||
-    user.firestoreRole === "customer"
-      ? user.firestoreRole
-      : "customer"
-  editStatus.value = user.status
-  successMsg.value = ""
-  errorMsg.value = ""
+function openViewUser(user: AppUser) {
+  selectedUser.value = user
+  viewModalOpen.value = true
 }
 
-function cancelEdit() {
-  editingUserId.value = ""
-  editDisplayName.value = ""
-  editRole.value = ""
-  editStatus.value = ""
+function closeViewUser() {
+  viewModalOpen.value = false
 }
 
-async function saveUser(userId: string) {
+function openEditUser(user: AppUser) {
   if (!props.isAdmin) return
+  selectedUser.value = user
+  editModalOpen.value = true
+}
 
-  try {
-    errorMsg.value = ""
-    successMsg.value = ""
+function closeEditUser() {
+  editModalOpen.value = false
+}
 
-    const existingUser = users.value.find((user) => user.id === userId)
-    if (!existingUser) {
-      throw new Error("User not found.")
+function openOrdersFromView(user?: AppUser) {
+  const targetUser = user ?? selectedUser.value
+  if (!targetUser) return
+
+  selectedUserId.value = targetUser.id
+  selectedUserName.value = targetUser.displayName || targetUser.email || "User"
+  orderModalOpen.value = true
+}
+
+function closeOrders() {
+  orderModalOpen.value = false
+  selectedUserId.value = ""
+  selectedUserName.value = ""
+}
+
+async function handleSaved() {
+  successMsg.value = "User updated successfully."
+  await loadUsers()
+
+  if (selectedUser.value) {
+    const updatedUser = users.value.find((user) => user.id === selectedUser.value?.id)
+    if (updatedUser) {
+      selectedUser.value = updatedUser
     }
-
-    await updateDoc(doc(db, "users", userId), {
-      displayName: editDisplayName.value.trim(),
-      status: editStatus.value,
-      updatedAt: serverTimestamp(),
-    })
-
-    if (existingUser.firestoreRole !== editRole.value) {
-      await setTargetUserRole(userId, editRole.value)
-    }
-
-    successMsg.value = "User updated successfully."
-    cancelEdit()
-    await loadUsers()
-  } catch (e: any) {
-    console.error("Failed to update user:", e)
-    errorMsg.value = e?.message ?? "Failed to update user."
   }
+
+  closeEditUser()
 }
 
-async function removeUser(userId: string) {
-  if (!props.isAdmin) return
+async function handleUserDeleted(userId: string) {
+  successMsg.value = "User deleted successfully."
+  await loadUsers()
 
-  const confirmed = window.confirm("Are you sure you want to delete this user?")
-  if (!confirmed) return
-
-  try {
-    errorMsg.value = ""
-    successMsg.value = ""
-
-    await deleteDoc(doc(db, "users", userId))
-    successMsg.value = "User deleted successfully."
-
-    await loadUsers()
-  } catch (e: any) {
-    console.error("Failed to delete user:", e)
-    errorMsg.value = e?.message ?? "Failed to delete user."
+  if (selectedUser.value?.id === userId) {
+    selectedUser.value = null
+    closeEditUser()
+    closeViewUser()
+    closeOrders()
   }
 }
 
@@ -186,7 +173,7 @@ onMounted(() => {
     <div>
       <h2 class="text-3xl font-pragati">Users</h2>
       <p class="text-white/70">
-        View all users. Only admins can edit or delete users.
+        View all users. Only admins can edit, disable, reset password, or delete users.
       </p>
     </div>
 
@@ -200,13 +187,11 @@ onMounted(() => {
         :key="user.id"
         class="rounded-md border border-white/10 bg-white/5 p-4"
       >
-        <div
-          v-if="editingUserId !== user.id"
-          class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
-        >
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div class="grid gap-1">
             <p class="text-lg font-medium">{{ user.displayName || "No name" }}</p>
             <p class="text-white/60">{{ user.email || "No email" }}</p>
+            <p class="text-white/60">Phone: {{ user.phoneNumber || "No phone number" }}</p>
             <p class="text-white/60">Firestore Role: {{ user.firestoreRole }}</p>
             <p class="text-white/60">Token Role: {{ user.tokenRole }}</p>
             <p class="text-white/60">Status: {{ user.status }}</p>
@@ -225,71 +210,18 @@ onMounted(() => {
 
           <div class="flex flex-wrap gap-3">
             <button
-              v-if="isAdmin"
               class="rounded-md border border-white/10 bg-white/10 px-4 py-2 text-white transition hover:bg-white/20"
-              @click="startEdit(user)"
+              @click="openViewUser(user)"
             >
-              Edit
+              View User
             </button>
 
             <button
               v-if="isAdmin"
               class="rounded-md border border-white/10 bg-white/10 px-4 py-2 text-white transition hover:bg-white/20"
-              @click="removeUser(user.id)"
+              @click="openEditUser(user)"
             >
-              Delete
-            </button>
-          </div>
-        </div>
-
-        <div v-else class="space-y-4">
-          <div class="grid gap-3 md:grid-cols-2">
-            <div>
-              <label class="mb-1 block text-sm text-white/70">Display Name</label>
-              <input
-                v-model="editDisplayName"
-                type="text"
-                class="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white outline-none"
-              />
-            </div>
-
-            <div>
-              <label class="mb-1 block text-sm text-white/70">Role</label>
-              <select
-                v-model="editRole"
-                class="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white outline-none"
-              >
-                <option value="customer">customer</option>
-                <option value="manager">manager</option>
-                <option value="admin">admin</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="mb-1 block text-sm text-white/70">Status</label>
-              <select
-                v-model="editStatus"
-                class="w-full rounded-md border border-white/10 bg-white/10 px-3 py-2 text-white outline-none"
-              >
-                <option value="active">active</option>
-                <option value="disabled">disabled</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap gap-3">
-            <button
-              class="rounded-md border border-white/10 bg-white/10 px-4 py-2 text-white transition hover:bg-white/20"
-              @click="saveUser(user.id)"
-            >
-              Save
-            </button>
-
-            <button
-              class="rounded-md border border-white/10 bg-white/10 px-4 py-2 text-white transition hover:bg-white/20"
-              @click="cancelEdit"
-            >
-              Cancel
+              Edit User
             </button>
           </div>
         </div>
@@ -297,5 +229,29 @@ onMounted(() => {
 
       <p v-if="users.length === 0" class="text-white/70">No users found.</p>
     </div>
+
+    <ViewUserModal
+      :is-open="viewModalOpen"
+      :user="selectedUser"
+      :is-admin="isAdmin"
+      @close="closeViewUser"
+      @edit="openEditUser"
+      @view-orders="openOrdersFromView"
+    />
+
+    <EditUserModal
+      :is-open="editModalOpen"
+      :user="selectedUser"
+      @close="closeEditUser"
+      @saved="handleSaved"
+      @deleted="handleUserDeleted"
+    />
+
+    <OrderHistoryModal
+      :is-open="orderModalOpen"
+      :user-id="selectedUserId"
+      :user-name="selectedUserName"
+      @close="closeOrders"
+    />
   </div>
 </template>

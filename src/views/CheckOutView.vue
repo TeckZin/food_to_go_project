@@ -8,6 +8,7 @@ import {
   getUserCart,
   type CartItem,
 } from "@/helper/cartFunction"
+import { clearUserCart, createOrder } from "@/helper/orderFunction"
 
 const router = useRouter()
 
@@ -103,16 +104,44 @@ async function placeOrder() {
     errorMsg.value = ""
     successMsg.value = ""
 
+    const user = auth.currentUser
+    if (!user) {
+      router.push({ path: "/auth", query: { mode: "login" } })
+      return
+    }
+
+    const orderId = await createOrder({
+      userUid: user.uid,
+      userEmail: user.email ?? "",
+      fullName: fullName.value.trim(),
+      phoneNumber: phoneNumber.value.trim(),
+      address: fullAddress.value,
+      campusLocation: campusLocation.value.trim(),
+      notes: notes.value.trim(),
+      items: cartItems.value.map((item) => ({
+        id: item.id,
+        name: item.name,
+        qty: item.qty,
+        price: Number(item.price),
+        imageUrl: "imageUrl" in item ? item.imageUrl : undefined,
+      })),
+    })
+
+    await clearUserCart(user.uid)
+
+    successMsg.value = "Order placed successfully."
+
     router.push({
       path: "/confirm",
       query: {
+        orderId,
         fullName: fullName.value.trim(),
         total: total.value.toFixed(2),
         itemCount: String(itemCount.value),
       },
     })
   } catch (e: any) {
-    errorMsg.value = e?.message ?? "Failed to continue."
+    errorMsg.value = e?.message ?? "Failed to place order."
   } finally {
     submitting.value = false
   }
@@ -280,12 +309,12 @@ onMounted(() => {
               <div>
                 <p class="font-medium">{{ item.name }}</p>
                 <p class="text-sm text-white/60">
-                  {{ item.qty }} × ${{ item.price.toFixed(2) }}
+                  {{ item.qty }} × ${{ Number(item.price).toFixed(2) }}
                 </p>
               </div>
 
               <p class="text-white/80">
-                ${{ (item.qty * item.price).toFixed(2) }}
+                ${{ (item.qty * Number(item.price)).toFixed(2) }}
               </p>
             </div>
           </div>

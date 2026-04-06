@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue"
+import { onBeforeUnmount, onMounted, ref, nextTick } from "vue"
 import { gsap } from "gsap"
 import NavBar from "@/components/NavBar.vue"
 import AddItemCard from "@/components/AddItemCard.vue"
@@ -8,6 +8,8 @@ import EditItemModal from "@/components/EditItemModal.vue"
 import AddToCartModal from "@/components/AddToCartModal.vue"
 import { getItems, type StoreItem } from "@/helper/itemsFunction"
 import { watchRoleState } from "@/helper/roleFunction"
+
+const pageRef = ref<HTMLElement | null>(null)
 
 const items = ref<StoreItem[]>([])
 const loading = ref(true)
@@ -24,6 +26,7 @@ const canManageItems = ref(false)
 const userRole = ref("")
 
 let unsubscribeAuth: (() => void) | null = null
+let ctx: gsap.Context | null = null
 
 async function loadItems() {
   try {
@@ -31,8 +34,11 @@ async function loadItems() {
     errorMsg.value = ""
 
     items.value = await getItems()
+    await nextTick()
 
-    requestAnimationFrame(() => {
+    if (ctx) ctx.revert()
+
+    ctx = gsap.context(() => {
       gsap.from(".store-card", {
         opacity: 0,
         y: 60,
@@ -40,8 +46,9 @@ async function loadItems() {
         duration: 0.6,
         ease: "back.out(1.7)",
         stagger: 0.15,
+        clearProps: "transform,opacity",
       })
-    })
+    }, pageRef.value as Element)
   } catch (e: any) {
     errorMsg.value = e?.message ?? "Failed to load items."
   } finally {
@@ -97,7 +104,6 @@ onMounted(() => {
   unsubscribeAuth = watchRoleState((state) => {
     userRole.value = state.role
     canManageItems.value = state.canManageItems
-
   })
 
   loadItems()
@@ -105,16 +111,17 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   unsubscribeAuth?.()
+  ctx?.revert()
 })
 </script>
 
 <template>
-  <div class="min-h-screen w-full bg-[#272B34] text-white">
-    <div class="mb-10">
+  <div ref="pageRef" class="min-h-screen w-full overflow-x-hidden bg-[#272B34] text-white">
+    <div class="relative z-[200] mb-10">
       <NavBar class="w-full" />
     </div>
 
-    <section class="mx-auto w-full max-w-[1600px] px-6 py-10 md:px-10">
+    <section class="relative z-0 mx-auto w-full max-w-[1600px] px-6 py-10 md:px-10">
       <p v-if="loading" class="font-inter text-lg text-white/70">
         Loading items...
       </p>
@@ -127,7 +134,7 @@ onBeforeUnmount(() => {
         <div
           v-for="item in items"
           :key="item.id"
-          class="store-card overflow-hidden rounded-[2rem] border border-white/10 bg-[#1F232B] shadow-[0_0.625rem_2.5rem_rgba(0,0,0,0.25)]"
+          class="store-card relative z-0 overflow-hidden rounded-[2rem] border border-white/10 bg-[#1F232B] shadow-[0_0.625rem_2.5rem_rgba(0,0,0,0.25)]"
         >
           <div class="relative border-b border-white/10 bg-[#303642] px-6 py-6">
             <div
