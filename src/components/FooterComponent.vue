@@ -8,14 +8,14 @@ const engineers = [
     linkedin: "https://www.linkedin.com/in/teckzintan/",
   },
   {
-    name: "Engineer Two",
+    name: "Thomas Do",
     github: "https://github.com/dot11atwit",
-    linkedin: "https://linkedin.com/in/engineer-two",
+    linkedin: "https://www.linkedin.com/in/thomas-do-342492330/",
   },
   {
-    name: "Thomas Do",
-    github: "https://github.com/engineer-three",
-    linkedin: "https://www.linkedin.com/in/thomas-do-342492330/",
+    name: "Ryan Conlon",
+    github: "https://github.com/conlonr2",
+    linkedin: "https://www.linkedin.com/in/ryanconlon3/",
   },
 ]
 </script>
