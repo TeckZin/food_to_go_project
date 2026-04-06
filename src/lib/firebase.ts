@@ -1,9 +1,8 @@
-import { initializeApp, getApps, getApp } from "firebase/app"
+import { initializeApp } from "firebase/app"
 import { getAuth } from "firebase/auth"
-import { getFirestore } from "firebase/firestore"
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
-import { getFunctions } from "firebase/functions"
-
+import { getFunctions, connectFunctionsEmulator } from "firebase/functions"
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -12,12 +11,24 @@ const firebaseConfig = {
     storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
     appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 }
 
+const app = initializeApp(firebaseConfig)
 
-export const app = getApps().length ? getApp() : initializeApp(firebaseConfig)
 export const auth = getAuth(app)
 export const db = getFirestore(app)
 export const storage = getStorage(app)
-export const functions = getFunctions(app)
+export const functions = getFunctions(app, "us-central1")
 
+const useFunctionsEmulator = import.meta.env.DEV
+const useFirestoreEmulator =
+    import.meta.env.VITE_USE_FIRESTORE_EMULATOR === "true"
+
+if (useFunctionsEmulator) {
+    connectFunctionsEmulator(functions, "127.0.0.1", 5001)
+}
+
+if (useFirestoreEmulator) {
+    connectFirestoreEmulator(db, "127.0.0.1", 8080)
+}

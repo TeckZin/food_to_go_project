@@ -6,14 +6,21 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  serverTimestamp,
 } from "firebase/firestore"
 import { db } from "@/lib/firebase"
+import {
+  getAllUserTokenRoles,
+  setTargetUserRole,
+  type UserRole,
+} from "@/helper/roleFunction"
 
 type AppUser = {
   id: string
   displayName: string
   email: string
-  role: string
+  firestoreRole: UserRole
+  tokenRole: UserRole | "loading..." | "unavailable"
   status: string
 }
 
@@ -28,30 +35,68 @@ const successMsg = ref("")
 
 const editingUserId = ref("")
 const editDisplayName = ref("")
-const editRole = ref("")
+const editRole = ref<UserRole>("")
 const editStatus = ref("")
 
 async function loadUsers() {
-  try {
-    loading.value = true
-    errorMsg.value = ""
-    successMsg.value = ""
+  loading.value = true
+  errorMsg.value = ""
+  successMsg.value = ""
 
+  try {
     const snapshot = await getDocs(collection(db, "users"))
 
     users.value = snapshot.docs.map((snap) => {
       const data = snap.data()
+      const firestoreRole =
+        data.role === "admin" || data.role === "manager" || data.role === "customer"
+          ? data.role
+          : "customer"
 
       return {
         id: snap.id,
         displayName: data.displayName ?? "",
         email: data.email ?? "",
-        role: data.role ?? "customer",
+        firestoreRole,
+        tokenRole: "loading...",
         status: data.status ?? "active",
       }
     })
   } catch (e: any) {
-    errorMsg.value = e?.message ?? "Failed to load users."
+    console.error("Failed to load Firestore users:", e)
+    errorMsg.value = e?.message ?? "Failed to load Firestore users."
+    users.value = []
+    loading.value = false
+    return
+  }
+
+  try {
+    const tokenRolesMap = await getAllUserTokenRoles()
+
+    users.value = users.value.map((user) => {
+      const tokenRoleRaw = tokenRolesMap[user.id]?.role
+      const tokenRole =
+        tokenRoleRaw === "admin" ||
+        tokenRoleRaw === "manager" ||
+        tokenRoleRaw === "customer"
+          ? tokenRoleRaw
+          : ""
+
+      return {
+        ...user,
+        tokenRole,
+      }
+    })
+  } catch (e: any) {
+    console.error("Failed to load token roles:", e)
+    errorMsg.value =
+      e?.message ??
+      "Firestore users loaded, but token roles could not be loaded."
+
+    users.value = users.value.map((user) => ({
+      ...user,
+      tokenRole: "unavailable",
+    }))
   } finally {
     loading.value = false
   }
@@ -62,7 +107,12 @@ function startEdit(user: AppUser) {
 
   editingUserId.value = user.id
   editDisplayName.value = user.displayName
-  editRole.value = user.role
+  editRole.value =
+    user.firestoreRole === "admin" ||
+    user.firestoreRole === "manager" ||
+    user.firestoreRole === "customer"
+      ? user.firestoreRole
+      : "customer"
   editStatus.value = user.status
   successMsg.value = ""
   errorMsg.value = ""
@@ -82,17 +132,26 @@ async function saveUser(userId: string) {
     errorMsg.value = ""
     successMsg.value = ""
 
+    const existingUser = users.value.find((user) => user.id === userId)
+    if (!existingUser) {
+      throw new Error("User not found.")
+    }
+
     await updateDoc(doc(db, "users", userId), {
-      displayName: editDisplayName.value,
-      role: editRole.value,
+      displayName: editDisplayName.value.trim(),
       status: editStatus.value,
+      updatedAt: serverTimestamp(),
     })
 
-    successMsg.value = "User updated successfully."
-    editingUserId.value = ""
+    if (existingUser.firestoreRole !== editRole.value) {
+      await setTargetUserRole(userId, editRole.value)
+    }
 
+    successMsg.value = "User updated successfully."
+    cancelEdit()
     await loadUsers()
   } catch (e: any) {
+    console.error("Failed to update user:", e)
     errorMsg.value = e?.message ?? "Failed to update user."
   }
 }
@@ -112,6 +171,7 @@ async function removeUser(userId: string) {
 
     await loadUsers()
   } catch (e: any) {
+    console.error("Failed to delete user:", e)
     errorMsg.value = e?.message ?? "Failed to delete user."
   }
 }
@@ -147,8 +207,20 @@ onMounted(() => {
           <div class="grid gap-1">
             <p class="text-lg font-medium">{{ user.displayName || "No name" }}</p>
             <p class="text-white/60">{{ user.email || "No email" }}</p>
-            <p class="text-white/60">Role: {{ user.role }}</p>
+            <p class="text-white/60">Firestore Role: {{ user.firestoreRole }}</p>
+            <p class="text-white/60">Token Role: {{ user.tokenRole }}</p>
             <p class="text-white/60">Status: {{ user.status }}</p>
+
+            <p
+              v-if="
+                user.tokenRole !== 'loading...' &&
+                user.tokenRole !== 'unavailable' &&
+                user.firestoreRole !== user.tokenRole
+              "
+              class="text-sm text-yellow-300"
+            >
+              Role mismatch between Firestore and token claims
+            </p>
           </div>
 
           <div class="flex flex-wrap gap-3">
