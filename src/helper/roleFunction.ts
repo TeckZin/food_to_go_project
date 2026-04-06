@@ -1,4 +1,4 @@
-import { onAuthStateChanged, type User } from "firebase/auth"
+import { onIdTokenChanged, type User } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 
 export type UserRole = "customer" | "manager" | "admin" | ""
@@ -19,19 +19,37 @@ export type RoleState = {
     canResetPasswords: boolean
 }
 
-export async function getUserRole(user: User | null): Promise<UserRole> {
-    if (!user) return ""
-
-    await user.getIdToken(true)
-    const tokenResult = await user.getIdTokenResult()
-
-    const role = tokenResult.claims.role
-
+function normalizeRole(role: unknown): UserRole {
     if (role === "admin" || role === "manager" || role === "customer") {
         return role
     }
-
     return ""
+}
+
+export async function getUserRole(user: User | null): Promise<UserRole> {
+    if (!user) return ""
+
+    try {
+        const tokenResult = await user.getIdTokenResult(true)
+        return normalizeRole(tokenResult.claims.role)
+    } catch (error) {
+        console.error("Failed to read role from token:", error)
+        return ""
+    }
+}
+
+export async function refreshCurrentUserRole(): Promise<UserRole> {
+    const user = auth.currentUser
+    if (!user) return ""
+
+    try {
+        await user.getIdToken(true)
+        const tokenResult = await user.getIdTokenResult()
+        return normalizeRole(tokenResult.claims.role)
+    } catch (error) {
+        console.error("Failed to refresh current user role:", error)
+        return ""
+    }
 }
 
 export async function getCurrentUserRole(): Promise<UserRole> {
@@ -99,7 +117,7 @@ export async function getRoleState(user: User | null): Promise<RoleState> {
 }
 
 export function watchRoleState(callback: (state: RoleState) => void) {
-    return onAuthStateChanged(auth, async (user) => {
+    return onIdTokenChanged(auth, async (user) => {
         const state = await getRoleState(user)
         callback(state)
     })
