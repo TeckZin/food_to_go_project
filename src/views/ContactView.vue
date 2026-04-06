@@ -24,7 +24,7 @@ let cooldownTimer: ReturnType<typeof setInterval> | null = null
 const contacts: ContactOption[] = [
   {
     name: "Teck Zin Tan",
-    role: "Engineer",
+    role: "Lead Engineer",
     email: "none",
   },
   {
@@ -34,8 +34,8 @@ const contacts: ContactOption[] = [
   },
   {
     name: "Thomas Do",
-    github: "https://github.com/engineer-three",
-    linkedin: "https://www.linkedin.com/in/thomas-do-342492330/",
+    role: "Engineer",
+    email: "engineer.two@example.com",
   },
   {
     name: "All Engineers",
